@@ -1,0 +1,80 @@
+:icons: font
+
+= .NET 6 -- Minimal API
+
+Example project for a minimal WebAPI with SQLite database backend.
+
+Based on the following, simple data model:
+
+[plantuml]
+----
+@startuml
+hide empty methods
+
+enum ProductTypes {
+    Food
+    Drink
+}
+class Product {
+    Id: int
+    Name: string
+    Type: ProductTypes
+    Price: decimal
+    Hot: bool
+    Vegetarian: bool
+}
+class Menu {
+    MenuNo: byte
+    Date: DateOnly
+    Products: List<MenuItem>
+}
+class MenuItem {
+    Amount: short
+}
+
+ProductTypes "1" -r- "n" Product
+Product "m" -r- "n" Menu
+(Product, Menu) .. MenuItem
+@enduml
+----
+
+== Create Database
+
+If you want to create the SQLite database in your dev environment first make sure you have the EF tools installed (`dotnet tool install --global dotnet-ef`).
+
+Then run `dotnet ef database update` to apply the migrations contained in the project.
+
+NOTE: The application will (re)create the database automatically when started, so this step is only required if you want to inspect the sample data while the application is not running.
+
+== Running the Application
+
+* If you start the application from Visual Studio it will automatically open a browser at the Swagger UI page
+* If you start it using `dotnet run` navigate to http://localhost:5001/swagger/index.html
+
+== Publishing
+
+For deployment to the server execute
+
+[source,bash]
+----
+dotnet publish -c Release -r linux-x64 --self-contained true
+----
+
+NOTE: If testing on Windows use RID `win-x64`
+
+Allow the executable to be executed with:
+
+[source,bash]
+----
+chmod +x MinmalBackend
+----
+
+Then execute with
+
+[source,bash]
+----
+./MinmalBackend
+----
+
+* *In production the backend is available at port 5000!*
+** e.g. Swagger at http://localhost:5000/swagger/index.html
