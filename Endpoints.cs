@@ -11,6 +11,43 @@ public static class Endpoints
 
         ConfigureProductEndpoints(app);
         ConfigureMenuEndpoints(app);
+        ConfigureRubbleMenuEndpoints(app);
+    }
+
+    private static void ConfigureRubbleMenuEndpoints(IEndpointRouteBuilder app)
+    {
+        Task<RubbleMenu?> GetMenuByIdAsync(DataContext ctx, Guid id) => 
+            ctx.RubbleMenus.FirstOrDefaultAsync(rm => rm.MenuId == id);
+
+        app.MapGet("/rubble-menu", async (DataContext ctx) => await ctx.RubbleMenus.ToListAsync());
+        app.MapGet("/rubble-menu/{id}",
+            async (DataContext ctx, Guid id) => await GetMenuByIdAsync(ctx, id));
+        app.MapGet("/rubble-menu/canteen", async (DataContext ctx, DateTime date, string location) =>
+            await ctx.RubbleMenus.Where(rm => rm.Date == date.Date && rm.Location == location).ToListAsync());
+
+        app.MapPut("/rubble-menu",
+            async (DataContext ctx, RubbleMenu newMenu) =>
+            {
+                newMenu.Date = newMenu.Date.Date;
+
+                var existing = await GetMenuByIdAsync(ctx, newMenu.MenuId);
+                if (existing == null)
+                {
+                    await ctx.RubbleMenus.AddAsync(newMenu);
+                }
+                else
+                {
+                    existing.Price = newMenu.Price;
+                    existing.Date = newMenu.Date;
+                    existing.Location = newMenu.Location;
+                    existing.Content = newMenu.Content;
+                    existing.MenuGroupName = newMenu.MenuGroupName;
+                    existing.MenuType = newMenu.MenuType;
+                }
+                
+                await ctx.SaveChangesAsync();
+                return Results.Created($"/rubble-menu/{newMenu.MenuId}", newMenu);
+            });
     }
 
     private static void ConfigureMenuEndpoints(IEndpointRouteBuilder app)

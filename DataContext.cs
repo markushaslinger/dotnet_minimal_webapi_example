@@ -16,6 +16,7 @@ public sealed class DataContext : DbContext
     public DbSet<Product> Products { get; set; } = default!;
     public DbSet<Menu> Menus { get; set; } = default!;
     public DbSet<MenuItem> MenuItems { get; set; } = default!;
+    public DbSet<RubbleMenu> RubbleMenus { get; set; } = default!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +36,10 @@ public sealed class DataContext : DbContext
             .WithMany()
             .HasForeignKey(mi => mi.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<RubbleMenu>().HasKey(rm => rm.MenuId);
+        modelBuilder.Entity<RubbleMenu>()
+            .HasIndex(rm => new { rm.Date, rm.Location });
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

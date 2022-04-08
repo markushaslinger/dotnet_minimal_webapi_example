@@ -37,4 +37,15 @@ public class Menu
     public List<MenuItem> Products { get; set; } = default!;
 }
 
+public class RubbleMenu
+{
+    public Guid MenuId { get; set; }
+    public string MenuGroupName { get; set; } = default!;
+    public decimal Price { get; set; }
+    public DateTime Date { get; set; }
+    public string MenuType { get; set; } = default!;
+    public string Content { get; set; } = default!;
+    public string Location { get; set; } = default!;
+}
+
 public record NewProduct(string Name, ProductTypes Type, decimal Price, bool Hot, bool? Vegetarian);
