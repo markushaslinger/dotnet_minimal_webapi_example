@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Cryptography;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
+using Microsoft.EntityFrameworkCore;
 
 namespace MinimalBackend;
 
@@ -12,20 +14,94 @@ public static class Endpoints
         ConfigureProductEndpoints(app);
         ConfigureMenuEndpoints(app);
         ConfigureRubbleMenuEndpoints(app);
+        ConfigureBlackBearEndpoints(app);
+    }
+
+    private static void ConfigureBlackBearEndpoints(IEndpointRouteBuilder app)
+    {
+        const string BASE = "/black-bear/user";
+
+        byte[] CreateSalt()
+        {
+            var salt = new byte[128 / 8];
+            RandomNumberGenerator.Fill(salt.AsSpan());
+            return salt;
+        }
+
+        string HashPassword(string password, byte[] salt)
+        {
+            var hashed = Convert.ToBase64String(KeyDerivation.Pbkdf2(
+                password: password,
+                salt: salt,
+                prf: KeyDerivationPrf.HMACSHA256,
+                iterationCount: 100000,
+                numBytesRequested: 256 / 8));
+            return hashed;
+        }
+
+        // only for demo purposes, actually providing a list of users is not recommended!
+        app.MapGet(BASE, async (DataContext ctx) => await ctx.Users.Select(u => u.Username).ToListAsync());
+        app.MapGet($"{BASE}/login", async (DataContext ctx, string username, string password) =>
+        {
+            var existing = await ctx.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (existing != null)
+            {
+                var submittedPassword = HashPassword(password, existing.Salt);
+                if (submittedPassword == existing.Password)
+                {
+                    return Results.Ok();
+                }
+            }
+
+            // we do not return if the username was unknown or the password incorrect to keep potential attackers in doubt
+            return Results.BadRequest();
+        });
+
+        app.MapPost(BASE, async (DataContext ctx, NewUser newUser) =>
+        {
+            var existing = await ctx.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username);
+            if (existing != null)
+            {
+                return Results.BadRequest($"Username {newUser.Username} already exists");
+            }
+
+            var salt = CreateSalt();
+
+            var user = new User
+            {
+                Email = newUser.Email,
+                Password = HashPassword(newUser.Password, salt),
+                Salt = salt,
+                Username = newUser.Username,
+                Permissions = newUser.Permissions.Distinct().Select(p => new Permission
+                {
+                    Username = newUser.Username,
+                    PermissionName = p
+                }).ToList()
+            };
+
+            await ctx.Users.AddAsync(user);
+            await ctx.SaveChangesAsync();
+
+            // not created, because there is no by id uri to refer to
+            return Results.Ok();
+        });
     }
 
     private static void ConfigureRubbleMenuEndpoints(IEndpointRouteBuilder app)
     {
+        const string BASE = "/rubble-menu";
+
         Task<RubbleMenu?> GetMenuByIdAsync(DataContext ctx, Guid id) => 
             ctx.RubbleMenus.FirstOrDefaultAsync(rm => rm.MenuId == id);
 
-        app.MapGet("/rubble-menu", async (DataContext ctx) => await ctx.RubbleMenus.ToListAsync());
-        app.MapGet("/rubble-menu/{id}",
+        app.MapGet(BASE, async (DataContext ctx) => await ctx.RubbleMenus.ToListAsync());
+        app.MapGet($"{BASE}/{{id}}",
             async (DataContext ctx, Guid id) => await GetMenuByIdAsync(ctx, id));
-        app.MapGet("/rubble-menu/canteen", async (DataContext ctx, DateTime date, string location) =>
+        app.MapGet($"{BASE}/canteen", async (DataContext ctx, DateTime date, string location) =>
             await ctx.RubbleMenus.Where(rm => rm.Date == date.Date && rm.Location == location).ToListAsync());
 
-        app.MapPut("/rubble-menu",
+        app.MapPut(BASE,
             async (DataContext ctx, RubbleMenu newMenu) =>
             {
                 newMenu.Date = newMenu.Date.Date;
@@ -46,7 +122,7 @@ public static class Endpoints
                 }
                 
                 await ctx.SaveChangesAsync();
-                return Results.Created($"/rubble-menu/{newMenu.MenuId}", newMenu);
+                return Results.Created($"{BASE}/{newMenu.MenuId}", newMenu);
             });
     }
 

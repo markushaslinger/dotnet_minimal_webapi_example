@@ -48,4 +48,20 @@ public class RubbleMenu
     public string Location { get; set; } = default!;
 }
 
+public class User
+{
+    public string Username { get; set; } = default!;
+    public string Password { get; set; } = default!;
+    public byte[] Salt { get; set; } = default!;
+    public string? Email { get; set; }
+    public List<Permission> Permissions { get; set; } = default!;
+}
+
+public class Permission
+{
+    public string Username { get; set; } = default!;
+    public string PermissionName { get; set; } = default!;
+}
+
 public record NewProduct(string Name, ProductTypes Type, decimal Price, bool Hot, bool? Vegetarian);
+public record NewUser(string Username, string Password, string? Email, List<string> Permissions);
