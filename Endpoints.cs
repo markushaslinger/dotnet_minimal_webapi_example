@@ -110,6 +110,11 @@ public static class Endpoints
                 }
                 return await query.Select(rm => new {rm.MenuId, rm.Date}).ToListAsync();
             });
+        app.MapGet($"{BASE}/{{menuId}}/order", async (DataContext ctx, Guid menuId) =>
+        {
+            return await ctx.RubbleOrders.Include(o => o.Menu)
+                .Where(o => o.MenuId == menuId).ToListAsync();
+        });
 
         app.MapPut(BASE,
             async (DataContext ctx, RubbleMenu newMenu) =>
@@ -150,6 +155,8 @@ public static class Endpoints
             };
             await ctx.RubbleOrders.AddAsync(order);
             await ctx.SaveChangesAsync();
+
+            return Results.Ok(order);
         });
     }
 

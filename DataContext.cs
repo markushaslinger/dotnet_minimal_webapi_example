@@ -44,8 +44,8 @@ public sealed class DataContext : DbContext
         modelBuilder.Entity<RubbleMenu>()
             .HasIndex(rm => new { rm.Date, rm.Location });
 
-        modelBuilder.Entity<RubbleOrder>().HasKey(o => o.MenuId);
-        modelBuilder.Entity<RubbleOrder>().Property(o => o.MenuId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<RubbleOrder>().HasKey(o => o.OrderNo);
+        modelBuilder.Entity<RubbleOrder>().Property(o => o.OrderNo).ValueGeneratedOnAdd();
         modelBuilder.Entity<RubbleOrder>().HasOne(o => o.Menu)
             .WithMany()
             .HasForeignKey(o => o.MenuId)
