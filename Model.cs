@@ -48,6 +48,15 @@ public class RubbleMenu
     public string Location { get; set; } = default!;
 }
 
+public class RubbleOrder
+{
+    public int OrderNo { get; set; }
+    public string OrderingEmployee { get; set; } = default!;
+    public Guid MenuId { get; set; }
+    public RubbleMenu Menu { get; set; } = default!;
+    public int Amount { get; set; }
+}
+
 public class User
 {
     public string Username { get; set; } = default!;
@@ -65,3 +74,4 @@ public class Permission
 
 public record NewProduct(string Name, ProductTypes Type, decimal Price, bool Hot, bool? Vegetarian);
 public record NewUser(string Username, string Password, string? Email, List<string> Permissions);
+public record NewOrder(Guid MenuId, string OrderingEmployee, int Amount);

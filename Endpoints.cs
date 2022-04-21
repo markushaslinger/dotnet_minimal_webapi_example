@@ -98,8 +98,18 @@ public static class Endpoints
         app.MapGet(BASE, async (DataContext ctx) => await ctx.RubbleMenus.ToListAsync());
         app.MapGet($"{BASE}/{{id}}",
             async (DataContext ctx, Guid id) => await GetMenuByIdAsync(ctx, id));
-        app.MapGet($"{BASE}/canteen", async (DataContext ctx, DateTime date, string location) =>
+        app.MapGet($"{BASE}/canteen/{{location}}", async (DataContext ctx, DateTime date, string location) =>
             await ctx.RubbleMenus.Where(rm => rm.Date == date.Date && rm.Location == location).ToListAsync());
+        app.MapGet($"{BASE}/canteen/{{location}}/days-available", async (DataContext ctx, string location, 
+            DateTime startDate, DateTime? endDate) =>
+            {
+                var query = ctx.RubbleMenus.Where(rm => rm.Date >= startDate && rm.Location == location);
+                if (endDate.HasValue)
+                {
+                    query = query.Where(rm => rm.Date <= endDate.Value);
+                }
+                return await query.Select(rm => new {rm.MenuId, rm.Date}).ToListAsync();
+            });
 
         app.MapPut(BASE,
             async (DataContext ctx, RubbleMenu newMenu) =>
@@ -124,6 +134,23 @@ public static class Endpoints
                 await ctx.SaveChangesAsync();
                 return Results.Created($"{BASE}/{newMenu.MenuId}", newMenu);
             });
+        app.MapPost($"{BASE}/order", async (DataContext ctx, NewOrder newOrder) =>
+        {
+            var menu = await GetMenuByIdAsync(ctx, newOrder.MenuId);
+            if (menu == null || newOrder.Amount < 1 || string.IsNullOrWhiteSpace(newOrder.OrderingEmployee))
+            {
+                return Results.BadRequest($"Unknown menu {newOrder.MenuId}");
+            }
+
+            var order = new RubbleOrder
+            {
+                Menu = menu,
+                Amount = newOrder.Amount,
+                OrderingEmployee = newOrder.OrderingEmployee
+            };
+            await ctx.RubbleOrders.AddAsync(order);
+            await ctx.SaveChangesAsync();
+        });
     }
 
     private static void ConfigureMenuEndpoints(IEndpointRouteBuilder app)

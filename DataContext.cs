@@ -17,6 +17,7 @@ public sealed class DataContext : DbContext
     public DbSet<Menu> Menus { get; set; } = default!;
     public DbSet<MenuItem> MenuItems { get; set; } = default!;
     public DbSet<RubbleMenu> RubbleMenus { get; set; } = default!;
+    public DbSet<RubbleOrder> RubbleOrders { get; set; } = default!;
     public DbSet<User> Users { get; set; } = default!;
     public DbSet<Permission> Permissions { get; set; } = default!;
 
@@ -42,6 +43,13 @@ public sealed class DataContext : DbContext
         modelBuilder.Entity<RubbleMenu>().HasKey(rm => rm.MenuId);
         modelBuilder.Entity<RubbleMenu>()
             .HasIndex(rm => new { rm.Date, rm.Location });
+
+        modelBuilder.Entity<RubbleOrder>().HasKey(o => o.MenuId);
+        modelBuilder.Entity<RubbleOrder>().Property(o => o.MenuId).ValueGeneratedOnAdd();
+        modelBuilder.Entity<RubbleOrder>().HasOne(o => o.Menu)
+            .WithMany()
+            .HasForeignKey(o => o.MenuId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<User>().HasKey(u => u.Username);
         modelBuilder.Entity<User>().HasMany(u => u.Permissions)
