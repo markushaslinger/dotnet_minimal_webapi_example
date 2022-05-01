@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using MinimalBackend;
+using MinimalBackend.Rubble;
+using RubbleMenuAPI;
+using RubbleMenuAPI.SimpleMock;
 
 const string POLICY = "AllowOrigin";
 
@@ -20,6 +23,9 @@ builder.Services.AddCors(c =>
         options.AllowAnyMethod();
     });
 });
+builder.Services.AddTransient<RubbleMenuService>();
+builder.Services.AddSingleton<IRubbleMenuAPI, InMemoryAPI>(); // use either this or
+// builder.Services.AddTransient<IRubbleMenuAPI, FileBasedAPI>(); // the full RM Mock
 
 var app = builder.Build();
 

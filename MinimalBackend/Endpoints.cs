@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
+using MinimalBackend.Rubble;
 
 namespace MinimalBackend;
 
@@ -115,6 +116,11 @@ public static class Endpoints
             return await ctx.RubbleOrders.Include(o => o.Menu)
                 .Where(o => o.MenuId == menuId).ToListAsync();
         });
+        // TODO (Jonas) remove the following two sample endpoints once understood
+        app.MapGet($"{BASE}/raw-menus", async (DataContext ctx, RubbleMenuService svc, DateTime day) 
+            => await svc.GetMenusForDay(day));
+        app.MapGet($"{BASE}/raw-reservations", async (RubbleMenuService svc)
+            => await svc.GetReservations());
 
         app.MapPut(BASE,
             async (DataContext ctx, RubbleMenu newMenu) =>

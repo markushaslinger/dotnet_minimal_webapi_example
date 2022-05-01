@@ -18,6 +18,11 @@
 
 	<ItemGroup>
 	  <Folder Include="Data\" />
+	  <Folder Include="Rubble\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\RubbleMenuAPI\RubbleMenuAPI.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

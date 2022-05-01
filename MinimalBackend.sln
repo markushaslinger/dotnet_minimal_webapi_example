@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32328.378
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalBackend", "MinimalBackend.csproj", "{055A7A9C-5DA1-40B2-BE14-8AC4375B6301}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MinimalBackend", "MinimalBackend\MinimalBackend.csproj", "{055A7A9C-5DA1-40B2-BE14-8AC4375B6301}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RubbleMenuAPI", "RubbleMenuAPI\RubbleMenuAPI.csproj", "{312EFD20-482A-488F-ADB2-0CEF51103F22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{055A7A9C-5DA1-40B2-BE14-8AC4375B6301}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{055A7A9C-5DA1-40B2-BE14-8AC4375B6301}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{055A7A9C-5DA1-40B2-BE14-8AC4375B6301}.Release|Any CPU.Build.0 = Release|Any CPU
+		{312EFD20-482A-488F-ADB2-0CEF51103F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{312EFD20-482A-488F-ADB2-0CEF51103F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{312EFD20-482A-488F-ADB2-0CEF51103F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{312EFD20-482A-488F-ADB2-0CEF51103F22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
