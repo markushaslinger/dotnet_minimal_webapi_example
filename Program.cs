@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.EntityFrameworkCore;
 using MinimalBackend;
 
-const string POLICY = "AllowOrigin";
+const string Policy = "AllowOrigin";
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
@@ -13,7 +13,7 @@ builder.Services.Configure<JsonOptions>(o => o.SerializerOptions.Converters
     .Add(new JsonStringEnumConverter()));
 builder.Services.AddCors(c =>
 {
-    c.AddPolicy(POLICY, options =>
+    c.AddPolicy(Policy, options =>
     {
         options.AllowAnyOrigin();
         options.AllowAnyHeader();
@@ -34,5 +34,5 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.ConfigureEndpoints();
 app.UseSwaggerUI();
-app.UseCors(POLICY);
+app.UseCors(Policy);
 app.Run();

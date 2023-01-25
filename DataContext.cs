@@ -10,12 +10,12 @@ public sealed class DataContext : DbContext
     {
         var rootDir = Directory.GetCurrentDirectory();
         var databaseName = Path.Combine(rootDir, "Data/db.sqlite3");
-        this._dbPath = databaseName;
+        _dbPath = databaseName;
     }
 
-    public DbSet<Product> Products { get; set; } = default!;
-    public DbSet<Menu> Menus { get; set; } = default!;
-    public DbSet<MenuItem> MenuItems { get; set; } = default!;
+    public required DbSet<Product> Products { get; init; }
+    public required DbSet<Menu> Menus { get; init; } 
+    public required DbSet<MenuItem> MenuItems { get; init; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -40,7 +40,7 @@ public sealed class DataContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.UseSqlite($"Data Source={this._dbPath}");
+        optionsBuilder.UseSqlite($"Data Source={_dbPath}");
     }
 }
 
