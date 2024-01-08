@@ -15,7 +15,7 @@ namespace MinimalBackend.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "6.0.3");
+            modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
             modelBuilder.Entity("MinimalBackend.Menu", b =>
                 {
@@ -93,6 +93,38 @@ namespace MinimalBackend.Migrations
                     b.Navigation("Menu");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("MinimalBackend.Product", b =>
+                {
+                    b.OwnsMany("MinimalBackend.Ingredient", "Ingredients", b1 =>
+                        {
+                            b1.Property<int>("ProductId")
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("INTEGER");
+
+                            b1.Property<string>("Allergens")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.Property<string>("Description")
+                                .IsRequired()
+                                .HasColumnType("TEXT");
+
+                            b1.HasKey("ProductId", "Id");
+
+                            b1.ToTable("Products");
+
+                            b1.ToJson("Ingredients");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProductId");
+                        });
+
+                    b.Navigation("Ingredients");
                 });
 
             modelBuilder.Entity("MinimalBackend.Menu", b =>

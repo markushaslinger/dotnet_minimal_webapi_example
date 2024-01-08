@@ -5,8 +5,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace MinimalBackend.Migrations
 {
-    public partial class InitialCreate : Migration
+    /// <inheritdoc />
+    public partial class Initial : Migration
     {
+        /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -32,7 +34,8 @@ namespace MinimalBackend.Migrations
                     Type = table.Column<int>(type: "INTEGER", nullable: false),
                     Price = table.Column<decimal>(type: "TEXT", nullable: false),
                     Hot = table.Column<bool>(type: "INTEGER", nullable: false),
-                    Vegetarian = table.Column<bool>(type: "INTEGER", nullable: true)
+                    Vegetarian = table.Column<bool>(type: "INTEGER", nullable: true),
+                    Ingredients = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -70,6 +73,7 @@ namespace MinimalBackend.Migrations
                 column: "ProductId");
         }
 
+        /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

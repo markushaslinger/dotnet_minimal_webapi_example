@@ -1,8 +1,12 @@
 :icons: font
+:nofooter:
+:sectnums:
+:toc:
 
-= .NET 6 -- Minimal API
+= .NET 8 -- Minimal API Example
 
 Example project for a minimal WebAPI with SQLite database backend.
+Contains all common tasks in a very condensed form.
 
 Based on the following, simple data model:
 
@@ -15,25 +19,31 @@ enum ProductTypes {
     Food
     Drink
 }
-class Product {
+entity Product {
     Id: int
     Name: string
     Type: ProductTypes
     Price: decimal
     Hot: bool
     Vegetarian: bool
+    Ingredients: List<Ingredient>
 }
-class Menu {
+entity Menu {
     MenuNo: byte
     Date: DateOnly
     Products: List<MenuItem>
 }
-class MenuItem {
+class Ingredient {
+    Description: string
+    Allergens: List<string>
+}
+entity MenuItem {
     Amount: short
 }
 
 ProductTypes "1" -r- "n" Product
 Product "m" -r- "n" Menu
+Product *-u- "n" Ingredient
 (Product, Menu) .. MenuItem
 @enduml
 ----
@@ -48,7 +58,7 @@ NOTE: The application will (re)create the database automatically when started, s
 
 == Running the Application
 
-* If you start the application from Visual Studio it will automatically open a browser at the Swagger UI page
+* If you start the application from Rider it will automatically open a browser at the Swagger UI page
 * If you start it using `dotnet run` navigate to http://localhost:5001/swagger/index.html
 
 == Publishing

@@ -11,11 +11,12 @@ public enum ProductTypes
 public class Product
 {
     public int Id { get; set; }
-    public string Name { get; set; } = default!;
+    public required string Name { get; set; }
     public ProductTypes Type { get; set; }
     public decimal Price { get; set; }
     public bool Hot { get; set; }
     public bool? Vegetarian { get; set; }
+    public required List<Ingredient> Ingredients { get; set; }
 }
 
 public class MenuItem
@@ -34,7 +35,14 @@ public class Menu
 {
     public int MenuNo { get; set; }
     public DateTime Date { get; set; }
-    public List<MenuItem> Products { get; set; } = default!;
+    public required List<MenuItem> Products { get; set; }
 }
 
-public record NewProduct(string Name, ProductTypes Type, decimal Price, bool Hot, bool? Vegetarian);
+public sealed class Ingredient
+{
+    public required string Description { get; set; }
+    public required List<string> Allergens { get; set; }
+}
+
+public sealed record NewProduct(string Name, ProductTypes Type, decimal Price, bool Hot, 
+                                bool? Vegetarian, IEnumerable<Ingredient> Ingredients);
